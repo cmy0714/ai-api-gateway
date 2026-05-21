@@ -1,8 +1,8 @@
-# new-api（修改版 Fork）
+# AI API Gateway
 
 基于 [new-api](https://github.com/QuantumNous/new-api) 的修改版本，提供大模型网关与 AI 资产管理能力。
 
-**对应源码：** https://github.com/cmy0714/new-api  
+**对应源码：** https://github.com/cmy0714/ai-api-gateway  
 **本仓库变更说明：** [MODIFICATIONS.md](./MODIFICATIONS.md)
 
 [English](./README.md)
@@ -10,8 +10,8 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/cmy0714/new-api.git
-cd new-api
+git clone https://github.com/cmy0714/ai-api-gateway.git
+cd ai-api-gateway
 docker-compose up -d
 ```
 
@@ -21,7 +21,7 @@ docker-compose up -d
 
 ```bash
 # 后端
-go build -o new-api .
+go build -o ai-api-gateway .
 
 # 前端（web/default）
 cd web/default && bun install && bun run build

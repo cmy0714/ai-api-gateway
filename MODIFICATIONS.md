@@ -19,7 +19,7 @@ attribution requirements.
 
 The complete corresponding source code for this modified version is available at:
 
-https://github.com/cmy0714/new-api
+https://github.com/cmy0714/ai-api-gateway
 
 When this software is offered as a network service, users interacting with
 it remotely may obtain the corresponding source from the repository above.

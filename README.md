@@ -1,8 +1,8 @@
-# new-api (Modified Fork)
+# AI API Gateway
 
 Modified version of [new-api](https://github.com/QuantumNous/new-api) — an LLM gateway and AI asset management platform.
 
-**Corresponding source:** https://github.com/cmy0714/new-api  
+**Corresponding source:** https://github.com/cmy0714/ai-api-gateway  
 **Changes in this fork:** [MODIFICATIONS.md](./MODIFICATIONS.md)
 
 [简体中文](./README.zh_CN.md)
@@ -10,8 +10,8 @@ Modified version of [new-api](https://github.com/QuantumNous/new-api) — an LLM
 ## Quick Start
 
 ```bash
-git clone https://github.com/cmy0714/new-api.git
-cd new-api
+git clone https://github.com/cmy0714/ai-api-gateway.git
+cd ai-api-gateway
 docker-compose up -d
 ```
 
@@ -21,7 +21,7 @@ Build from source:
 
 ```bash
 # backend
-go build -o new-api .
+go build -o ai-api-gateway .
 
 # frontend (web/default)
 cd web/default && bun install && bun run build
