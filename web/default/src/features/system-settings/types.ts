@@ -268,6 +268,13 @@ export type BillingSettings = {
   WaffoPancakeCurrency: string
   WaffoPancakeUnitPrice: number
   WaffoPancakeMinTopUp: number
+  OpenPaymentBaseURL: string
+  OpenPaymentAppId: string
+  OpenPaymentAppSecret: string
+  OpenPaymentReturnUrl: string
+  OpenPaymentMinTopUp: number
+  OpenPaymentOrderExpireMinutes: number
+  OpenPaymentMethods: string
   'checkin_setting.enabled': boolean
   'checkin_setting.min_quota': number
   'checkin_setting.max_quota': number

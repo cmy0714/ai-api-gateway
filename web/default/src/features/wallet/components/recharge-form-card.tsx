@@ -118,17 +118,17 @@ export function RechargeFormCard({
 
   const handleAmountChange = (value: string) => {
     setLocalAmount(value)
-    const numValue = parseInt(value) || 0
+    const numValue = Number.parseFloat(value) || 0
     if (numValue >= 0) {
       onTopupAmountChange(numValue)
     }
   }
 
   const hasConfigurableTopup =
-    topupInfo?.enable_online_topup ||
     topupInfo?.enable_stripe_topup ||
     enableWaffoTopup ||
-    enableWaffoPancakeTopup
+    enableWaffoPancakeTopup ||
+    topupInfo?.enable_open_payment_topup
   const hasAnyTopup = hasConfigurableTopup || enableCreemTopup
   const hasStandardPaymentMethods =
     Array.isArray(topupInfo?.pay_methods) && topupInfo.pay_methods.length > 0
@@ -136,6 +136,15 @@ export function RechargeFormCard({
     Array.isArray(waffoPayMethods) && waffoPayMethods.length > 0
   const minTopup = getMinTopupAmount(topupInfo)
   const redemptionEnabled = topupInfo?.enable_redemption !== false
+  const openPaymentUnavailableReasons =
+    topupInfo?.open_payment_unavailable_reasons || []
+  const openPaymentReasonLabels: Record<string, string> = {
+    payment_compliance_not_confirmed: t('Payment compliance is not confirmed'),
+    base_url_missing: t('Payment Center API endpoint is missing'),
+    app_id_missing: t('Payment Center App ID is missing'),
+    app_secret_missing: t('Payment Center App Secret is missing'),
+    payment_methods_missing: t('Payment Center payment methods are missing'),
+  }
 
   if (loading) {
     return (
@@ -282,6 +291,7 @@ export function RechargeFormCard({
                   <Input
                     id='topup-amount'
                     type='number'
+                    step='0.01'
                     value={localAmount}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     min={minTopup}
@@ -422,9 +432,25 @@ export function RechargeFormCard({
       ) : (
         <Alert>
           <AlertDescription>
-            {t(
-              'Online topup is not enabled. Please use redemption code or contact administrator.'
-            )}
+            <div className='space-y-2'>
+              <p>
+                {t(
+                  'Online topup is not enabled. Please use redemption code or contact administrator.'
+                )}
+              </p>
+              {openPaymentUnavailableReasons.length > 0 && (
+                <div className='text-muted-foreground text-xs'>
+                  <p>{t('Payment Center unavailable reasons:')}</p>
+                  <ul className='mt-1 list-disc pl-4'>
+                    {openPaymentUnavailableReasons.map((reason) => (
+                      <li key={reason}>
+                        {openPaymentReasonLabels[reason] || reason}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </AlertDescription>
         </Alert>
       )}

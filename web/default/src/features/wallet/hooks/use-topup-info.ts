@@ -30,6 +30,7 @@ import type {
   PaymentMethod,
   WaffoPayMethod,
 } from '../types'
+import { PAYMENT_TYPES } from '../constants'
 
 // ============================================================================
 // Topup Info Hook
@@ -66,9 +67,17 @@ function parsePaymentMethods(
       const normalizedMinTopup = Number.isFinite(rawMinTopup) ? rawMinTopup : 0
       const type = typeof item.type === 'string' ? item.type : ''
 
+      const provider =
+        type === PAYMENT_TYPES.STRIPE || type === PAYMENT_TYPES.WAFFO_PANCAKE
+          ? type
+          : typeof item.provider === 'string'
+            ? item.provider
+            : 'epay'
+
       return {
         name: typeof item.name === 'string' ? item.name : '',
         type,
+        provider,
         color: typeof item.color === 'string' ? item.color : undefined,
         min_topup:
           type === 'stripe' && normalizedMinTopup <= 0
@@ -76,7 +85,13 @@ function parsePaymentMethods(
             : normalizedMinTopup,
       }
     })
-    .filter((item) => item.name && item.type && item.type !== 'waffo')
+    .filter(
+      (item) =>
+        item.name &&
+        item.type &&
+        item.type !== PAYMENT_TYPES.WAFFO &&
+        item.provider !== 'epay'
+    )
 }
 
 function parseWaffoPayMethods(data: unknown): WaffoPayMethod[] {
@@ -178,18 +193,21 @@ export function useTopupInfo() {
         return
       }
 
+      const standardPaymentMethods = parsePaymentMethods(
+        response.data.pay_methods,
+        response.data.stripe_min_topup
+      )
+
       const processedData: TopupInfo = {
         ...response.data,
-        pay_methods: parsePaymentMethods(
-          response.data.pay_methods,
-          response.data.stripe_min_topup
-        ),
+        pay_methods: standardPaymentMethods,
         amount_options: parseAmountOptions(response.data.amount_options),
         discount: parseDiscountMap(response.data.discount),
         creem_products: parseCreemProducts(response.data.creem_products),
         waffo_pay_methods: parseWaffoPayMethods(
           response.data.waffo_pay_methods
         ),
+        open_payment_methods: response.data.open_payment_methods || [],
       }
 
       setTopupInfo(processedData)

@@ -20,11 +20,11 @@ import {
   Zap,
   Shield,
   Globe,
-  Code,
+  BarChart3,
   Gauge,
   DollarSign,
   Users,
-  HeartHandshake,
+  Clock,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { AnimateInView } from '@/components/animate-in-view'
@@ -40,33 +40,43 @@ export function Features(_props: FeaturesProps) {
     {
       id: 'fast',
       num: '01',
-      title: t('Lightning Fast'),
+      title: t('Blazing Performance'),
       desc: t(
-        'Optimized network architecture ensures millisecond response times'
+        'Intelligent routing and edge caching deliver sub-200ms latency across all models'
       ),
       span: 'md:col-span-2',
-      icon: <Zap className='size-4 text-blue-400' />,
+      icon: <Zap className='size-4 text-orange-400' />,
       visual: (
         <div className='mt-4 grid grid-cols-3 gap-2'>
-          {['OpenAI', 'Claude', 'Gemini', 'DeepSeek', 'Qwen', 'Llama'].map(
-            (name) => (
-              <div
-                key={name}
-                className='border-border/30 bg-muted/20 text-muted-foreground flex items-center justify-center rounded-lg border px-3 py-2 text-xs transition-colors duration-300 hover:border-blue-500/30 hover:bg-blue-500/5'
-              >
-                {name}
-              </div>
-            )
-          )}
+          {[
+            { name: 'GPT-4o', ms: '142ms' },
+            { name: 'Claude', ms: '156ms' },
+            { name: 'Gemini', ms: '93ms' },
+            { name: 'DeepSeek', ms: '118ms' },
+            { name: 'Qwen', ms: '105ms' },
+            { name: 'Llama', ms: '88ms' },
+          ].map((model) => (
+            <div
+              key={model.name}
+              className='border-border/30 bg-muted/20 flex items-center justify-between rounded-lg border px-3 py-2 transition-colors duration-300 hover:border-orange-500/30 hover:bg-orange-500/5'
+            >
+              <span className='text-muted-foreground text-xs'>
+                {model.name}
+              </span>
+              <span className='font-mono text-[10px] text-emerald-600 dark:text-emerald-400'>
+                {model.ms}
+              </span>
+            </div>
+          ))}
         </div>
       ),
     },
     {
       id: 'secure',
       num: '02',
-      title: t('Secure & Reliable'),
+      title: t('Enterprise Security'),
       desc: t(
-        'Enterprise-grade security with comprehensive permission management'
+        'End-to-end encryption, role-based access control, and full audit trail'
       ),
       span: 'md:col-span-1',
       icon: <Shield className='size-4 text-emerald-400' />,
@@ -101,54 +111,65 @@ export function Features(_props: FeaturesProps) {
     {
       id: 'global',
       num: '03',
-      title: t('Global Coverage'),
-      desc: t('Multi-region deployment for stable global access'),
+      title: t('Smart Load Balancing'),
+      desc: t(
+        'Automatic failover and intelligent traffic distribution across providers'
+      ),
       span: 'md:col-span-1',
       icon: <Globe className='size-4 text-violet-400' />,
       visual: (
         <div className='mt-4 space-y-2'>
-          {[t('Load Balancing'), t('Rate Limiting'), t('Cost Tracking')].map(
-            (step, i) => (
-              <div key={step} className='flex items-center gap-2'>
-                <div
-                  className={`flex size-6 items-center justify-center rounded-full text-[10px] font-bold ${
-                    i === 1
-                      ? 'border border-blue-500/30 bg-blue-500/20 text-blue-500'
-                      : 'border-border/40 bg-muted text-muted-foreground border'
-                  }`}
-                >
-                  {i + 1}
-                </div>
-                <div className='bg-border/40 h-px flex-1' />
-                <span className='text-muted-foreground text-xs'>{step}</span>
+          {[
+            t('Auto Failover'),
+            t('Traffic Routing'),
+            t('Health Monitoring'),
+          ].map((step, i) => (
+            <div key={step} className='flex items-center gap-2'>
+              <div
+                className={`flex size-6 items-center justify-center rounded-full text-[10px] font-bold ${
+                  i === 1
+                    ? 'border border-orange-500/30 bg-orange-500/20 text-orange-500'
+                    : 'border-border/40 bg-muted text-muted-foreground border'
+                }`}
+              >
+                {i + 1}
               </div>
-            )
-          )}
+              <div className='bg-border/40 h-px flex-1' />
+              <span className='text-muted-foreground text-xs'>{step}</span>
+            </div>
+          ))}
         </div>
       ),
     },
     {
-      id: 'developer',
+      id: 'analytics',
       num: '04',
-      title: t('Developer Friendly'),
-      desc: t('Compatible API routes for common AI application workflows'),
+      title: t('Real-time Analytics'),
+      desc: t(
+        'Comprehensive dashboards for usage tracking, cost analysis, and performance insights'
+      ),
       span: 'md:col-span-2',
-      icon: <Code className='size-4 text-amber-400' />,
+      icon: <BarChart3 className='size-4 text-amber-400' />,
       visual: (
-        <div className='mt-4 flex items-center gap-3'>
-          <div className='flex -space-x-2'>
-            {['API', 'SDK', 'CLI', 'Docs'].map((n) => (
+        <div className='mt-4 flex items-center gap-4'>
+          <div className='flex flex-1 items-end gap-1'>
+            {[40, 65, 45, 80, 55, 90, 70, 85].map((h, i) => (
               <div
-                key={n}
-                className='border-background from-muted to-muted/60 text-muted-foreground flex size-8 items-center justify-center rounded-full border-2 bg-gradient-to-br text-[9px] font-bold'
-              >
-                {n}
-              </div>
+                key={i}
+                className='flex-1 rounded-sm bg-gradient-to-t from-orange-500/40 to-orange-500/10 transition-all duration-300 hover:from-orange-500/60 hover:to-orange-500/20'
+                style={{ height: `${h}%`, minHeight: `${h * 0.4}px` }}
+              />
             ))}
           </div>
-          <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
-            <Code className='size-3.5 text-blue-500' />
-            {t('Multi-protocol Compatible')}
+          <div className='text-muted-foreground space-y-1 text-[10px]'>
+            <div className='flex items-center gap-1.5'>
+              <span className='inline-block size-2 rounded-full bg-orange-500/60' />
+              {t('Requests')}
+            </div>
+            <div className='flex items-center gap-1.5'>
+              <span className='inline-block size-2 rounded-full bg-emerald-500/60' />
+              {t('Tokens')}
+            </div>
           </div>
         </div>
       ),
@@ -158,23 +179,23 @@ export function Features(_props: FeaturesProps) {
   const additionalFeatures = [
     {
       icon: <Gauge className='size-5' strokeWidth={1.5} />,
-      title: t('High Performance'),
-      desc: t('Support for high concurrency with automatic load balancing'),
+      title: t('Auto Scaling'),
+      desc: t('Handles millions of requests with zero configuration'),
     },
     {
       icon: <DollarSign className='size-5' strokeWidth={1.5} />,
       title: t('Transparent Billing'),
-      desc: t('Pay-as-you-go with real-time usage monitoring'),
+      desc: t('Pay only for what you use with real-time cost tracking'),
     },
     {
       icon: <Users className='size-5' strokeWidth={1.5} />,
-      title: t('Team Collaboration'),
-      desc: t('Multi-user management with flexible permission allocation'),
+      title: t('Team Management'),
+      desc: t('Granular permissions and multi-tenant workspace support'),
     },
     {
-      icon: <HeartHandshake className='size-5' strokeWidth={1.5} />,
-      title: t('Open Source'),
-      desc: t('Community driven, self-hosted, and extensible'),
+      icon: <Clock className='size-5' strokeWidth={1.5} />,
+      title: t('24/7 Reliability'),
+      desc: t('99.9% uptime SLA backed by global infrastructure'),
     },
   ]
 
@@ -183,17 +204,17 @@ export function Features(_props: FeaturesProps) {
       <div className='mx-auto max-w-6xl'>
         <AnimateInView className='mb-16 max-w-lg'>
           <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
-            {t('Core Features')}
+            {t('Why Choose Us')}
           </p>
           <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-3xl'>
-            {t('Built for developers,')}
+            {t('Built for performance,')}
             <br />
-            {t('designed for scale')}
+            {t('designed for growth')}
           </h2>
         </AnimateInView>
 
         {/* Bento grid */}
-        <div className='border-border/40 bg-border/40 grid gap-px overflow-hidden rounded-xl border md:grid-cols-3'>
+        <div className='border-border/40 bg-border/40 grid gap-px overflow-hidden rounded-2xl border md:grid-cols-3'>
           {features.map((f, i) => (
             <AnimateInView
               key={f.id}

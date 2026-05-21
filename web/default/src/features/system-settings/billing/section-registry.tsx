@@ -158,6 +158,12 @@ const BILLING_SECTIONS = [
           CreemWebhookSecret: settings.CreemWebhookSecret,
           CreemTestMode: settings.CreemTestMode,
           CreemProducts: settings.CreemProducts,
+          OpenPaymentBaseURL: settings.OpenPaymentBaseURL ?? '',
+          OpenPaymentAppId: settings.OpenPaymentAppId ?? '',
+          OpenPaymentAppSecret: settings.OpenPaymentAppSecret ?? '',
+          OpenPaymentReturnUrl: settings.OpenPaymentReturnUrl ?? '',
+          OpenPaymentMinTopUp: settings.OpenPaymentMinTopUp ?? 1,
+          OpenPaymentOrderExpireMinutes: settings.OpenPaymentOrderExpireMinutes ?? 30,
         }}
         waffoDefaultValues={{
           WaffoEnabled: settings.WaffoEnabled ?? false,

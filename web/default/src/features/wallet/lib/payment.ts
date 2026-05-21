@@ -87,11 +87,22 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
 }
 
 /**
+ * Check if payment method is Open Payment (payment center)
+ */
+export function isOpenPayment(paymentType: string): boolean {
+  return paymentType.startsWith('open_')
+}
+
+/**
  * Get default payment type from topup info
  */
 export function getDefaultPaymentType(topupInfo: TopupInfo | null): string {
   if (!topupInfo) {
     return DEFAULT_PAYMENT_TYPE
+  }
+
+  if (topupInfo.open_payment_methods?.length) {
+    return topupInfo.open_payment_methods[0].type
   }
 
   // Return first available payment method or default
@@ -120,6 +131,10 @@ export function getDefaultPaymentType(topupInfo: TopupInfo | null): string {
 export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
   if (!topupInfo) {
     return DEFAULT_MIN_TOPUP
+  }
+
+  if (topupInfo.enable_open_payment_topup) {
+    return topupInfo.open_payment_min_topup || DEFAULT_MIN_TOPUP
   }
 
   if (topupInfo.enable_online_topup) {

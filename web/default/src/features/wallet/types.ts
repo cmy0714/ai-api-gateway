@@ -89,6 +89,8 @@ export interface PaymentMethod {
   name: string
   /** Payment method type identifier */
   type: string
+  /** Payment provider used for routing */
+  provider?: 'epay' | 'open_payment' | string
   /** Optional color for UI display */
   color?: string
   /** Minimum topup amount for this payment method */
@@ -151,6 +153,14 @@ export interface TopupInfo {
   payment_compliance_confirmed?: boolean
   /** Current compliance terms version */
   payment_compliance_terms_version?: string
+  /** Whether Open Payment topup is enabled */
+  enable_open_payment_topup?: boolean
+  /** Available Open Payment methods */
+  open_payment_methods?: PaymentMethod[]
+  /** Minimum topup amount for Open Payment */
+  open_payment_min_topup?: number
+  /** Diagnostic reasons when Open Payment is not available */
+  open_payment_unavailable_reasons?: string[]
 }
 
 /**
@@ -240,6 +250,44 @@ export interface UserWalletData {
 }
 
 /**
+ * Open Payment pay response
+ */
+export interface OpenPaymentPayResponse {
+  trade_no: string
+  order_no: string
+  pay_mode: 'qr' | 'redirect' | 'params'
+  qr_code_url?: string
+  pay_url?: string
+  pay_params?: Record<string, unknown>
+}
+
+/**
+ * Open Payment status response
+ */
+export interface OpenPaymentStatusResponse {
+  status: string
+  trade_no: string
+  refund_status?: string
+}
+
+/**
+ * Open Payment request
+ */
+export interface OpenPaymentRequest {
+  amount: number
+  payment_method: string
+}
+
+/**
+ * Open Payment refund request (admin)
+ */
+export interface OpenPaymentRefundRequest {
+  trade_no: string
+  refund_amount: number
+  reason?: string
+}
+
+/**
  * Topup record status
  */
 export type TopupStatus = 'success' | 'pending' | 'expired'
@@ -260,6 +308,14 @@ export interface TopupRecord {
   trade_no: string
   /** Payment method type */
   payment_method: string
+  /** Payment provider */
+  payment_provider?: string
+  /** Provider trade number */
+  provider_trade_no?: string
+  /** Refund amount */
+  refund_amount?: number
+  /** Refund status */
+  refund_status?: string
   /** Creation timestamp */
   create_time: number
   /** Completion timestamp */

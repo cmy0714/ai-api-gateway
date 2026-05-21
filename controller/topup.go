@@ -23,9 +23,15 @@ import (
 
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
+	enableOpenPayment, openPaymentUnavailableReasons := getOpenPaymentTopUpAvailability()
 
-	// 获取支付方式
-	payMethods := operation_setting.PayMethods
+	// Epay 已从钱包主流程下线，通用付款方式由支付中心执行。
+	payMethods := []map[string]string{}
+	openPaymentMethods := []map[string]string{}
+	if enableOpenPayment {
+		openPaymentMethods = setting.GetOpenPaymentMethodsForAPI(operation_setting.PayMethods)
+		payMethods = openPaymentMethods
+	}
 	if !complianceConfirmed {
 		payMethods = []map[string]string{}
 	}
@@ -95,7 +101,7 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	data := gin.H{
-		"enable_online_topup":              isEpayTopUpEnabled(),
+		"enable_online_topup":              enableOpenPayment,
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),
 		"enable_waffo_topup":               enableWaffo,
@@ -109,15 +115,19 @@ func GetTopUpInfo(c *gin.Context) {
 			}
 			return nil
 		}(),
-		"creem_products":          setting.CreemProducts,
-		"pay_methods":             payMethods,
-		"min_topup":               operation_setting.MinTopUp,
-		"stripe_min_topup":        setting.StripeMinTopUp,
-		"waffo_min_topup":         setting.WaffoMinTopUp,
-		"waffo_pancake_min_topup": setting.WaffoPancakeMinTopUp,
-		"amount_options":          operation_setting.GetPaymentSetting().AmountOptions,
-		"discount":                operation_setting.GetPaymentSetting().AmountDiscount,
-		"topup_link":              common.TopUpLink,
+		"creem_products":                   setting.CreemProducts,
+		"pay_methods":                      payMethods,
+		"min_topup":                        operation_setting.MinTopUp,
+		"stripe_min_topup":                 setting.StripeMinTopUp,
+		"waffo_min_topup":                  setting.WaffoMinTopUp,
+		"waffo_pancake_min_topup":          setting.WaffoPancakeMinTopUp,
+		"enable_open_payment_topup":        enableOpenPayment,
+		"open_payment_methods":             openPaymentMethods,
+		"open_payment_min_topup":           setting.OpenPaymentMinTopUp,
+		"open_payment_unavailable_reasons": openPaymentUnavailableReasons,
+		"amount_options":                   operation_setting.GetPaymentSetting().AmountOptions,
+		"discount":                         operation_setting.GetPaymentSetting().AmountDiscount,
+		"topup_link":                       common.TopUpLink,
 	}
 	common.ApiSuccess(c, data)
 }
@@ -128,7 +138,7 @@ type EpayRequest struct {
 }
 
 type AmountRequest struct {
-	Amount int64 `json:"amount"`
+	Amount float64 `json:"amount"`
 }
 
 func GetEpayClient() *epay.Client {
@@ -145,8 +155,8 @@ func GetEpayClient() *epay.Client {
 	return withUrl
 }
 
-func getPayMoney(amount int64, group string) float64 {
-	dAmount := decimal.NewFromInt(amount)
+func getPayMoney(amount float64, group string) float64 {
+	dAmount := decimal.NewFromFloat(amount)
 	// 充值金额以“展示类型”为准：
 	// - USD/CNY: 前端传 amount 为金额单位；TOKENS: 前端传 tokens，需要换成 USD 金额
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
@@ -203,7 +213,7 @@ func RequestEpay(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "获取用户分组失败"})
 		return
 	}
-	payMoney := getPayMoney(req.Amount, group)
+	payMoney := getPayMoney(float64(req.Amount), group)
 	if payMoney < 0.01 {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
 		return
@@ -418,8 +428,8 @@ func RequestAmount(c *gin.Context) {
 		return
 	}
 
-	if req.Amount < getMinTopup() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
+	if req.Amount <= 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值数量必须大于 0"})
 		return
 	}
 	id := c.GetInt("id")
@@ -429,7 +439,7 @@ func RequestAmount(c *gin.Context) {
 		return
 	}
 	payMoney := getPayMoney(req.Amount, group)
-	if payMoney <= 0.01 {
+	if payMoney < 0.01 {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
 		return
 	}

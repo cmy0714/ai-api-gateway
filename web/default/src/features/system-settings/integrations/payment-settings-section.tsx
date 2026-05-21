@@ -132,6 +132,12 @@ const paymentSchema = z.object({
       })
     }
   }),
+  OpenPaymentBaseURL: z.string(),
+  OpenPaymentAppId: z.string(),
+  OpenPaymentAppSecret: z.string(),
+  OpenPaymentReturnUrl: z.string(),
+  OpenPaymentMinTopUp: z.coerce.number().min(0),
+  OpenPaymentOrderExpireMinutes: z.coerce.number().min(1),
 })
 
 type PaymentFormValues = z.infer<typeof paymentSchema>
@@ -530,6 +536,12 @@ export function PaymentSettingsSection({
       StripeUnitPrice: values.StripeUnitPrice,
       StripeMinTopUp: values.StripeMinTopUp,
       StripePromotionCodesEnabled: values.StripePromotionCodesEnabled,
+      OpenPaymentBaseURL: removeTrailingSlash(values.OpenPaymentBaseURL),
+      OpenPaymentAppId: values.OpenPaymentAppId.trim(),
+      OpenPaymentAppSecret: values.OpenPaymentAppSecret.trim(),
+      OpenPaymentReturnUrl: values.OpenPaymentReturnUrl.trim(),
+      OpenPaymentMinTopUp: values.OpenPaymentMinTopUp,
+      OpenPaymentOrderExpireMinutes: values.OpenPaymentOrderExpireMinutes,
     }
 
     const initial = {
@@ -551,6 +563,15 @@ export function PaymentSettingsSection({
       StripeMinTopUp: initialRef.current.StripeMinTopUp,
       StripePromotionCodesEnabled:
         initialRef.current.StripePromotionCodesEnabled,
+      OpenPaymentBaseURL: removeTrailingSlash(
+        initialRef.current.OpenPaymentBaseURL
+      ),
+      OpenPaymentAppId: initialRef.current.OpenPaymentAppId.trim(),
+      OpenPaymentAppSecret: initialRef.current.OpenPaymentAppSecret.trim(),
+      OpenPaymentReturnUrl: initialRef.current.OpenPaymentReturnUrl.trim(),
+      OpenPaymentMinTopUp: initialRef.current.OpenPaymentMinTopUp,
+      OpenPaymentOrderExpireMinutes:
+        initialRef.current.OpenPaymentOrderExpireMinutes,
     }
 
     const updates: Array<{ key: string; value: string | number | boolean }> = []
@@ -648,6 +669,51 @@ export function PaymentSettingsSection({
       })
     }
 
+    if (sanitized.OpenPaymentBaseURL !== initial.OpenPaymentBaseURL) {
+      updates.push({
+        key: 'OpenPaymentBaseURL',
+        value: sanitized.OpenPaymentBaseURL,
+      })
+    }
+    if (
+      sanitized.OpenPaymentAppId &&
+      sanitized.OpenPaymentAppId !== initial.OpenPaymentAppId
+    ) {
+      updates.push({
+        key: 'OpenPaymentAppId',
+        value: sanitized.OpenPaymentAppId,
+      })
+    }
+    if (
+      sanitized.OpenPaymentAppSecret &&
+      sanitized.OpenPaymentAppSecret !== initial.OpenPaymentAppSecret
+    ) {
+      updates.push({
+        key: 'OpenPaymentAppSecret',
+        value: sanitized.OpenPaymentAppSecret,
+      })
+    }
+    if (sanitized.OpenPaymentReturnUrl !== initial.OpenPaymentReturnUrl) {
+      updates.push({
+        key: 'OpenPaymentReturnUrl',
+        value: sanitized.OpenPaymentReturnUrl,
+      })
+    }
+    if (sanitized.OpenPaymentMinTopUp !== initial.OpenPaymentMinTopUp) {
+      updates.push({
+        key: 'OpenPaymentMinTopUp',
+        value: sanitized.OpenPaymentMinTopUp,
+      })
+    }
+    if (
+      sanitized.OpenPaymentOrderExpireMinutes !==
+      initial.OpenPaymentOrderExpireMinutes
+    ) {
+      updates.push({
+        key: 'OpenPaymentOrderExpireMinutes',
+        value: sanitized.OpenPaymentOrderExpireMinutes,
+      })
+    }
     for (const update of updates) {
       await updateOption.mutateAsync(update)
     }
@@ -1458,6 +1524,107 @@ export function PaymentSettingsSection({
                 ? t('Saving...')
                 : t('Save Creem settings')}
             </Button>
+          </div>
+
+          <Separator className='my-6' />
+
+          <Separator />
+
+          <div className='space-y-4'>
+            <div>
+              <h3 className='text-lg font-medium'>
+                {t('Payment Center Gateway')}
+              </h3>
+              <p className='text-muted-foreground text-sm'>
+                {t('Configuration for Payment Center (Open Payment) integration')}
+              </p>
+            </div>
+
+            <FormField
+              control={form.control}
+              name='OpenPaymentBaseURL'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('API endpoint')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder='https://pay.example.com' {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    {t('Payment center root URL or API base URL')}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <FormField
+                control={form.control}
+                name='OpenPaymentAppId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('App ID')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='OpenPaymentAppSecret'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('App Secret')}</FormLabel>
+                    <FormControl>
+                      <Input type='password' autoComplete='new-password' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name='OpenPaymentReturnUrl'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Return URL')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('Optional, defaults to topup page')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <FormField
+                control={form.control}
+                name='OpenPaymentMinTopUp'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Minimum top-up amount')}</FormLabel>
+                    <FormControl>
+                      <Input type='number' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='OpenPaymentOrderExpireMinutes'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Order expiration (minutes)')}</FormLabel>
+                    <FormControl>
+                      <Input type='number' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
           <Button type='submit' disabled={updateOption.isPending}>

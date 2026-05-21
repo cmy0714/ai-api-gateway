@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useState } from 'react'
-import { Search, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useCallback } from 'react'
+import { Search, Copy, Check, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatCurrencyFromUSD } from '@/lib/currency'
 import { formatNumber } from '@/lib/format'
@@ -59,6 +59,8 @@ import {
   getPaymentMethodName,
   formatTimestamp,
 } from '../../lib/billing'
+import type { TopupRecord } from '../../types'
+import { RefundDialog } from './refund-dialog'
 
 interface BillingHistoryDialogProps {
   open: boolean
@@ -86,7 +88,13 @@ export function BillingHistoryDialog({
   } = useBillingHistory()
 
   const [confirmTradeNo, setConfirmTradeNo] = useState<string | null>(null)
+  const [refundRecord, setRefundRecord] = useState<TopupRecord | null>(null)
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false)
   const { copyToClipboard, copiedText } = useCopyToClipboard({ notify: false })
+
+  const handleRefundSuccess = useCallback(() => {
+    handlePageChange(page)
+  }, [handlePageChange, page])
 
   const totalPages = Math.ceil(total / pageSize)
 
@@ -261,6 +269,28 @@ export function BillingHistoryDialog({
                           </div>
                         </div>
 
+                        {/* Refund Status */}
+                        {record.refund_status && (
+                          <div className='mt-2'>
+                            <StatusBadge
+                              label={
+                                record.refund_status === 'refunded'
+                                  ? t('Fully Refunded')
+                                  : record.refund_status === 'refunding'
+                                    ? t('Partially Refunded')
+                                    : record.refund_status
+                              }
+                              variant={
+                                record.refund_status === 'refunded'
+                                  ? 'neutral'
+                                  : 'warning'
+                              }
+                              showDot
+                              copyable={false}
+                            />
+                          </div>
+                        )}
+
                         {/* Admin Actions */}
                         {isAdmin && record.status === 'pending' && (
                           <div className='mt-4 flex justify-end'>
@@ -274,6 +304,24 @@ export function BillingHistoryDialog({
                             </Button>
                           </div>
                         )}
+                        {isAdmin &&
+                          record.status === 'success' &&
+                          record.payment_provider === 'open_payment' &&
+                          record.refund_status !== 'refunded' && (
+                            <div className='mt-4 flex justify-end'>
+                              <Button
+                                size='sm'
+                                variant='outline'
+                                onClick={() => {
+                                  setRefundRecord(record)
+                                  setRefundDialogOpen(true)
+                                }}
+                              >
+                                <RotateCcw className='mr-1.5 h-3.5 w-3.5' />
+                                {t('Refund')}
+                              </Button>
+                            </div>
+                          )}
                       </div>
                     )
                   })}
@@ -346,6 +394,14 @@ export function BillingHistoryDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Refund Dialog */}
+      <RefundDialog
+        open={refundDialogOpen}
+        onOpenChange={setRefundDialogOpen}
+        record={refundRecord}
+        onSuccess={handleRefundSuccess}
+      />
     </>
   )
 }

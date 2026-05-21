@@ -583,3 +583,13 @@ For commercial licensing, please contact support@quantumnous.com
     animation: none !important;
   }
 }
+
+@utility btn-gradient-orange {
+  background: linear-gradient(135deg, oklch(0.705 0.213 47.6), oklch(0.78 0.16 55));
+  color: white;
+  box-shadow: 0 4px 14px -3px oklch(0.705 0.213 47.6 / 35%);
+  &:hover {
+    background: linear-gradient(135deg, oklch(0.67 0.22 47.6), oklch(0.75 0.17 55));
+    box-shadow: 0 6px 20px -3px oklch(0.705 0.213 47.6 / 45%);
+  }
+}

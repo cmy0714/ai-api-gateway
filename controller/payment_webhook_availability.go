@@ -117,3 +117,28 @@ func isEpayWebhookConfigured() bool {
 func isEpayWebhookEnabled() bool {
 	return isEpayTopUpEnabled()
 }
+
+func isOpenPaymentTopUpEnabled() bool {
+	enabled, _ := getOpenPaymentTopUpAvailability()
+	return enabled
+}
+
+func getOpenPaymentTopUpAvailability() (bool, []string) {
+	reasons := make([]string, 0)
+	if !isPaymentComplianceConfirmed() {
+		reasons = append(reasons, "payment_compliance_not_confirmed")
+	}
+	if strings.TrimSpace(setting.OpenPaymentBaseURL) == "" {
+		reasons = append(reasons, "base_url_missing")
+	}
+	if strings.TrimSpace(setting.OpenPaymentAppId) == "" {
+		reasons = append(reasons, "app_id_missing")
+	}
+	if strings.TrimSpace(setting.OpenPaymentAppSecret) == "" {
+		reasons = append(reasons, "app_secret_missing")
+	}
+	if len(setting.GetOpenPaymentMethodsFromPayMethods(operation_setting.PayMethods)) == 0 {
+		reasons = append(reasons, "payment_methods_missing")
+	}
+	return len(reasons) == 0, reasons
+}

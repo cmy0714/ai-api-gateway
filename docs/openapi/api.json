@@ -3356,7 +3356,7 @@
       "post": {
         "summary": "创建令牌",
         "deprecated": false,
-        "description": "🔐 需要登录（User权限）",
+        "description": "🔐 需要登录（User权限）。创建成功时返回新令牌的 id、name 和完整 key。",
         "tags": [
           "令牌管理"
         ],

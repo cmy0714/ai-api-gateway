@@ -30,7 +30,15 @@ export function AuthLayout({ children }: AuthLayoutProps) {
   const { systemName, logo, loading } = useSystemConfig()
 
   return (
-    <div className='relative grid h-svh max-w-none'>
+    <div className='relative grid h-svh max-w-none overflow-hidden'>
+      <div
+        aria-hidden
+        className='pointer-events-none fixed -top-40 -right-40 size-96 rounded-full bg-primary/10 blur-3xl'
+      />
+      <div
+        aria-hidden
+        className='pointer-events-none fixed -bottom-32 -left-32 size-72 rounded-full bg-primary/5 blur-3xl'
+      />
       <Link
         to='/'
         className='absolute top-4 left-4 z-10 flex items-center gap-2 transition-opacity hover:opacity-80 sm:top-8 sm:left-8'

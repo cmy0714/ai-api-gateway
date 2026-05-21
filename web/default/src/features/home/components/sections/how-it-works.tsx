@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Settings, Zap, BarChart3 } from 'lucide-react'
+import { UserPlus, Key, Rocket } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { AnimateInView } from '@/components/animate-in-view'
 
@@ -26,25 +26,27 @@ export function HowItWorks() {
   const steps = [
     {
       num: '1',
-      title: t('Configure'),
+      title: t('Create Account'),
       desc: t(
-        'Add your API keys, set up channels and configure access permissions'
+        'Sign up in seconds and get instant access to your personal dashboard'
       ),
-      icon: <Settings className='size-6' strokeWidth={1.5} />,
+      icon: <UserPlus className='size-6' strokeWidth={1.5} />,
     },
     {
       num: '2',
-      title: t('Connect'),
+      title: t('Get Your API Key'),
       desc: t(
-        'Connect through OpenAI, Claude, Gemini, and other compatible API routes'
+        'Generate a secure API key and choose from 50+ available AI models'
       ),
-      icon: <Zap className='size-6' strokeWidth={1.5} />,
+      icon: <Key className='size-6' strokeWidth={1.5} />,
     },
     {
       num: '3',
-      title: t('Monitor'),
-      desc: t('Track usage, costs and performance with real-time analytics'),
-      icon: <BarChart3 className='size-6' strokeWidth={1.5} />,
+      title: t('Start Building'),
+      desc: t(
+        'Integrate with a single line of code and scale without limits'
+      ),
+      icon: <Rocket className='size-6' strokeWidth={1.5} />,
     },
   ]
 
@@ -53,10 +55,10 @@ export function HowItWorks() {
       <div className='mx-auto max-w-6xl'>
         <AnimateInView className='mb-16 text-center md:mb-20'>
           <p className='text-muted-foreground mb-3 text-xs font-medium tracking-widest uppercase'>
-            {t('How It Works')}
+            {t('Get Started')}
           </p>
           <h2 className='text-2xl font-bold tracking-tight md:text-3xl'>
-            {t('Three steps to get started')}
+            {t('Up and running in minutes')}
           </h2>
         </AnimateInView>
 
@@ -68,11 +70,17 @@ export function HowItWorks() {
               animation='fade-up'
               className='relative flex flex-col items-center text-center'
             >
+              {i < steps.length - 1 && (
+                <div
+                  aria-hidden
+                  className='from-border/60 via-border/30 absolute top-8 left-[calc(50%+3rem)] hidden h-px w-[calc(100%-6rem)] bg-gradient-to-r to-transparent md:block'
+                />
+              )}
               <div className='relative mb-6'>
                 <div className='text-muted-foreground border-border/50 bg-muted/30 flex size-16 items-center justify-center rounded-2xl border transition-colors'>
                   {step.icon}
                 </div>
-                <div className='bg-foreground text-background absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-xs font-bold'>
+                <div className='bg-primary text-primary-foreground absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-xs font-bold'>
                   {step.num}
                 </div>
               </div>

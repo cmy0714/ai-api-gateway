@@ -25,6 +25,7 @@ import { SectionPageLayout } from '@/components/layout'
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
+import { OpenPaymentQrDialog } from './components/dialogs/open-payment-qr-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
@@ -40,9 +41,11 @@ import {
   useWaffoPayment,
   useWaffoPancakePayment,
 } from './hooks'
+import { useOpenPayment } from './hooks/use-open-payment'
 import {
   getDefaultPaymentType,
   getMinTopupAmount,
+  isOpenPayment,
   isWaffoPancakePayment,
 } from './lib'
 import type {
@@ -102,6 +105,14 @@ export function Wallet(props: WalletProps) {
   const { processWaffoPayment } = useWaffoPayment()
   const { processing: pancakeProcessing, processWaffoPancakePayment } =
     useWaffoPancakePayment()
+  const {
+    processing: openPaymentProcessing,
+    polling: openPaymentPolling,
+    payResponse: openPaymentResponse,
+    showQrDialog: openPaymentQrOpen,
+    processOpenPayment,
+    closeQrDialog: closeOpenPaymentQr,
+  } = useOpenPayment()
 
   // Fetch and refresh user data
   const fetchUser = useCallback(async () => {
@@ -184,6 +195,22 @@ export function Wallet(props: WalletProps) {
   // Handle payment confirmation
   const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return
+
+    const selectedOpenPaymentMethod =
+      selectedPaymentMethod.provider === 'open_payment' ||
+      topupInfo?.open_payment_methods?.some(
+        (method) => method.type === selectedPaymentMethod.type
+      )
+
+    if (isOpenPayment(selectedPaymentMethod.type) || selectedOpenPaymentMethod) {
+      setConfirmDialogOpen(false)
+      await processOpenPayment(
+        topupAmount,
+        selectedPaymentMethod.type,
+        fetchUser
+      )
+      return
+    }
 
     const isPancake = isWaffoPancakePayment(selectedPaymentMethod.type)
     const success = isPancake
@@ -360,6 +387,13 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <OpenPaymentQrDialog
+        open={openPaymentQrOpen}
+        onClose={closeOpenPaymentQr}
+        payResponse={openPaymentResponse}
+        polling={openPaymentPolling}
       />
     </>
   )

@@ -24,6 +24,12 @@ https://github.com/QuantumNous/new-api
 Modified versions must not misrepresent the origin of the software and must
 mark their changes in accordance with AGPLv3 Section 7(c).
 
+==== Derivative Modifications ====
+
+This repository may contain modifications on top of upstream new-api.
+See MODIFICATIONS.md for a summary of changes and corresponding source
+availability information.
+
 ==== Third-Party Notices ====
 
 This product includes third-party open source software. Copyright notices and

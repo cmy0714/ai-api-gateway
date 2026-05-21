@@ -118,6 +118,13 @@ func InitOptionMap() {
 	common.OptionMap["WaffoPancakeCurrency"] = setting.WaffoPancakeCurrency
 	common.OptionMap["WaffoPancakeUnitPrice"] = strconv.FormatFloat(setting.WaffoPancakeUnitPrice, 'f', -1, 64)
 	common.OptionMap["WaffoPancakeMinTopUp"] = strconv.Itoa(setting.WaffoPancakeMinTopUp)
+	common.OptionMap["OpenPaymentBaseURL"] = setting.OpenPaymentBaseURL
+	common.OptionMap["OpenPaymentAppId"] = setting.OpenPaymentAppId
+	common.OptionMap["OpenPaymentAppSecret"] = setting.OpenPaymentAppSecret
+	common.OptionMap["OpenPaymentReturnUrl"] = setting.OpenPaymentReturnUrl
+	common.OptionMap["OpenPaymentMinTopUp"] = strconv.FormatFloat(setting.OpenPaymentMinTopUp, 'f', -1, 64)
+	common.OptionMap["OpenPaymentOrderExpireMinutes"] = strconv.Itoa(setting.OpenPaymentOrderExpireMinutes)
+	common.OptionMap["OpenPaymentMethods"] = setting.OpenPaymentMethods
 	common.OptionMap["TopupGroupRatio"] = common.TopupGroupRatio2JSONString()
 	common.OptionMap["Chats"] = setting.Chats2JsonString()
 	common.OptionMap["AutoGroups"] = setting.AutoGroups2JsonString()
@@ -443,6 +450,20 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.WaffoPancakeUnitPrice, _ = strconv.ParseFloat(value, 64)
 	case "WaffoPancakeMinTopUp":
 		setting.WaffoPancakeMinTopUp, _ = strconv.Atoi(value)
+	case "OpenPaymentBaseURL":
+		setting.OpenPaymentBaseURL = value
+	case "OpenPaymentAppId":
+		setting.OpenPaymentAppId = value
+	case "OpenPaymentAppSecret":
+		setting.OpenPaymentAppSecret = value
+	case "OpenPaymentReturnUrl":
+		setting.OpenPaymentReturnUrl = value
+	case "OpenPaymentMinTopUp":
+		setting.OpenPaymentMinTopUp, _ = strconv.ParseFloat(value, 64)
+	case "OpenPaymentOrderExpireMinutes":
+		setting.OpenPaymentOrderExpireMinutes, _ = strconv.Atoi(value)
+	case "OpenPaymentMethods":
+		setting.OpenPaymentMethods = value
 	case "TopupGroupRatio":
 		err = common.UpdateTopupGroupRatioByJSONString(value)
 	case "GitHubClientId":

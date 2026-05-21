@@ -84,7 +84,11 @@ export function getPaymentIcon(
     return <CreditCard className={className} />
   }
 
-  switch (paymentType) {
+  const normalizedPaymentType = paymentType.startsWith('open_')
+    ? paymentType.slice('open_'.length)
+    : paymentType
+
+  switch (normalizedPaymentType) {
     case PAYMENT_TYPES.ALIPAY:
       return (
         <SiAlipay
@@ -93,6 +97,8 @@ export function getPaymentIcon(
         />
       )
     case PAYMENT_TYPES.WECHAT:
+    case 'wechat':
+    case 'wechat_native':
       return (
         <SiWechat
           className={className}

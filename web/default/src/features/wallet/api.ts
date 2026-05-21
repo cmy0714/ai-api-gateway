@@ -38,6 +38,10 @@ import type {
   WaffoPaymentResponse,
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
+  OpenPaymentRequest,
+  OpenPaymentPayResponse,
+  OpenPaymentStatusResponse,
+  OpenPaymentRefundRequest,
 } from './types'
 
 // ============================================================================
@@ -231,5 +235,39 @@ export async function completeOrder(
   request: CompleteOrderRequest
 ): Promise<ApiResponse> {
   const res = await api.post('/api/user/topup/complete', request)
+  return res.data
+}
+
+/**
+ * Request Open Payment
+ */
+export async function requestOpenPayment(
+  request: OpenPaymentRequest
+): Promise<ApiResponse<OpenPaymentPayResponse>> {
+  const res = await api.post('/api/user/open-payment/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Get Open Payment order status
+ */
+export async function getOpenPaymentStatus(
+  tradeNo: string
+): Promise<ApiResponse<OpenPaymentStatusResponse>> {
+  const res = await api.get(`/api/user/open-payment/status?trade_no=${tradeNo}`)
+  return res.data
+}
+
+/**
+ * Request Open Payment refund (admin only)
+ */
+export async function requestOpenPaymentRefund(
+  request: OpenPaymentRefundRequest
+): Promise<ApiResponse<{ refund_no: string; status: string }>> {
+  const res = await api.post('/api/user/open-payment/refund', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
   return res.data
 }
